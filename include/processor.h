@@ -7,6 +7,17 @@ class Processor {
 
   // TODO: Declare any necessary private members
  private:
+ long prevIdle_;
+ long prevIoWait_ ;
+ long prevUser_ ;
+ long prevNice_ ;
+ long prevSystem_;
+ long prevIrq_ ;
+ long prevSoftIrq_ ;
+ long prevSteal_ ;
+
+ void assignPreviousValues(double idle, double iowait, double user, double nice, double system, double irq, double softirq, double steal);
+
 };
 
 #endif
