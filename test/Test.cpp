@@ -15,32 +15,33 @@ using std::stoi;
 
 
 int main () {
-  std::string memtotal, memfree, memavail, membufs;
-  float fmemtotal, fmemfree, fmemavail, fmembufs;
-  float result = 0.0;
-  std::string key, value;
-  std::string line;
-  std::ifstream stream("/proc/meminfo");
-  if (stream.is_open()) {
-      while (std::getline(stream, line)) {
-    std::istringstream linestream(line);
-     while (linestream >> key >> value) {
-        if (key == "MemTotal:") {
-          fmemtotal = std::stof(value);
-          std::cout << "MemTotal" <<fmemtotal << "\n";
-        } else if (key == "MemFree:") {
-          fmemfree = std::stof(value);
-          std::cout << "MemFree" << fmemfree << "\n";
-        } else if (key == "MemAvailable:") {
-          fmemavail = std::stof(value);
-          std::cout << "MemAvailable" << fmemavail << "\n";
-        } else if (key == "Buffers:") {
-          fmembufs = std::stof(value);
-          std::cout << "Buffers" <<fmembufs << "\n";
+ string line, key, value0, value1, value2, value3, result, user, x;
+  // std::ifstream filestream("/proc/3330/status");
+  // if (filestream.is_open()) {
+  //   while (std::getline(filestream, line)) {
+  //     std::istringstream linestream(line);
+  //     linestream >> key >> value0 >> value1 >> value2 >> value3;
+  //       if (key == "Uid:") {
+  //         result = value0;
+  //         std::cout << "line " << line << "\n";
+  //         std::cout << "result " << result << "\n";
+  //       }
+  //   }
+  // }
+
+
+  std::ifstream filestream("/etc/passwd");
+  if (filestream.is_open()) {
+    while (std::getline(filestream, line)) {
+      std::replace(line.begin(), line.end(), ':', ' ');
+      std::istringstream linestream(line);
+      linestream >> user >> x >> key;
+        if (key == to_string(0)) {
+          result = user;
+           std::cout << "line " << line << "\n";
+          std::cout << "result " << result << "\n";
         }
-     }
-  }
-  result = (fmemtotal - fmemfree) / fmemtotal;
-  }
-  return result; 
+    }
+  } 
+
 }
