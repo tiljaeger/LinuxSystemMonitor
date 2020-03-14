@@ -14,6 +14,7 @@ using std::to_string;
 using std::vector;
 using std::stoi;
 
+
 // An example of how to read data from the filesystem
 string LinuxParser::OperatingSystem() {
   string line;
@@ -34,12 +35,14 @@ string LinuxParser::OperatingSystem() {
       }
     }
   }
+  filestream.close();
   return value;
 }
 
 // An example of how to read data from the filesystem
 string LinuxParser::Kernel() {
-  string os, kernel;
+  string os; 
+  string kernel;
   string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
@@ -47,6 +50,7 @@ string LinuxParser::Kernel() {
     std::istringstream linestream(line);
     linestream >> os >> kernel;
   }
+  stream.close();
   return kernel;
 }
 
@@ -71,11 +75,15 @@ vector<int> LinuxParser::Pids() {
 }
 
 float LinuxParser::MemoryUtilization() { 
-  std::string memtotal, memfree, memavail, membufs;
-  float fmemtotal, fmemfree;
+  string memtotal; 
+  string memfree;
+  string memavail;
+  string membufs;
+  float fmemtotal; 
+  float fmemfree;
   float result = 0.0;
-  std::string key, value;
-  std::string line;
+  string key, value;
+  string line;
   std::ifstream stream("/proc/meminfo");
   if (stream.is_open()) {
       while (std::getline(stream, line)) {
@@ -90,6 +98,7 @@ float LinuxParser::MemoryUtilization() {
     }
     result = (fmemtotal - fmemfree) / fmemtotal;
   }
+  stream.close();
   return result; 
 }
 
@@ -109,7 +118,16 @@ long LinuxParser::IdleJiffies() { return 0; }
 vector<string> LinuxParser::CpuUtilization() { 
   string line;
   string key;
-  string value0, value1, value2, value3, value4, value5, value6, value7, value8, value9;
+  string value0;
+  string value1;
+  string value2; 
+  string value3; 
+  string value4; 
+  string value5; 
+  string value6; 
+  string value7; 
+  string value8; 
+  string value9;
   vector<string> result{};
   std::ifstream filestream(kProcDirectory + kStatFilename);
   if (filestream.is_open()) {
@@ -130,6 +148,7 @@ vector<string> LinuxParser::CpuUtilization() {
         }
     }
   } 
+  filestream.close();
   return result;
 }
 
@@ -148,6 +167,7 @@ int LinuxParser::TotalProcesses() {
         }
     }
   } 
+  filestream.close();
   return result;
 }
 
@@ -166,6 +186,7 @@ int LinuxParser::RunningProcesses() {
         }
     }
   } 
+  filestream.close();
   return result;
 }
 
@@ -175,18 +196,25 @@ string LinuxParser::Command(int pid) {
   if (stream.is_open()) {
     std::getline(stream, cmd);
   }
+  stream.close();
   return cmd;
 }
 
 string LinuxParser::Ram(int pid) { 
-  string line, key, value, result;
-  float memFloat1, memFloat2;
+  string line; 
+  string key; 
+  string value; 
+  string result;
+  float memFloat1;
+  float memFloat2;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) +  kStatusFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
       std::istringstream linestream(line);
       linestream >> key >> value;
-        if (key == "VmSize:") {
+      // use VmData (exact physical memory being used) instead of VmSize (virtual memory size)
+      // please compare description http://man7.org/linux/man-pages/man5/proc.5.html
+        if (key == "VmData:") {
           memFloat1 = stof(value);
           memFloat2 = memFloat1/1024;
         }
@@ -195,11 +223,15 @@ string LinuxParser::Ram(int pid) {
   result = to_string(memFloat2);
   int pos = result.find(".");
   result = result.substr(0,pos);
+  filestream.close();
   return result;
  }
 
 string LinuxParser::Uid(int pid) { 
-  string line, key, value, result;
+  string line; 
+  string key; 
+  string value; 
+  string result;
   std::ifstream filestream(kProcDirectory + std::to_string(pid) +  kStatusFilename);
   if (filestream.is_open()) {
     while (std::getline(filestream, line)) {
@@ -210,12 +242,16 @@ string LinuxParser::Uid(int pid) {
         }
     }
   } 
+  filestream.close();
   return result;
 
 }
 
 string LinuxParser::User(int pid) { 
-  string line, user, x, result;
+  string line;
+  string user; 
+  string x; 
+  string result;
   string key;
   string uid = LinuxParser::Uid(pid);
   std::ifstream filestream(kPasswordPath);
@@ -229,6 +265,7 @@ string LinuxParser::User(int pid) {
         }
     }
   } 
+  filestream.close();
   return result;
  }
 
@@ -246,6 +283,7 @@ long LinuxParser::UpTime(int pid) {
 
   long secs = stol(tokens[21]);
   long hertz = sysconf(_SC_CLK_TCK);
+  stream.close();
   return secs / hertz;
 }
 
@@ -259,6 +297,7 @@ long LinuxParser::UpTime() {
     std::istringstream linestream(line);
     linestream >> system_time >> idle_time;
   }
+  stream.close();
   return system_time; 
 }
 
@@ -286,5 +325,6 @@ float LinuxParser::CpuUtilization(int pid) {
   total_time = total_time + cutime + cstime;
   float seconds = uptime - (starttime / hertz);
   float cpu_usage = ((total_time / hertz) / seconds);
+  stream.close();
   return cpu_usage;
 }

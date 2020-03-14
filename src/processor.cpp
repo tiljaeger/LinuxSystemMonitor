@@ -8,7 +8,7 @@
 using std::string;
 using std::vector;
 
-float Processor::Utilization() { 
+double Processor::Utilization() { 
     vector<string> cpuInfo = LinuxParser::CpuUtilization();
     double user, nice, system, idle, iowait, irq, softirq, steal;
  
@@ -34,7 +34,7 @@ float Processor::Utilization() {
     double totalDiff = Total - PrevTotal;
     double idleDiff = Idle - PrevIdle;
 
-    float result = (totalDiff - idleDiff) / totalDiff;
+    double result = (totalDiff - idleDiff) / totalDiff;
 
     assignPreviousValues(idle, iowait, user, nice, system, irq, softirq, steal);
 

@@ -24,7 +24,7 @@ Processor& System::Cpu() {
 vector<Process>& System::Processes() { 
     processes_.clear();
     vector<int> pids = LinuxParser::Pids();
-    for (int i=0; i< pids.size(); i++) {
+    for (unsigned int i=0; i< pids.size(); i++) {
         int currentPid = pids[i];
         Process process (currentPid);
         processes_.emplace_back(process);
@@ -32,7 +32,7 @@ vector<Process>& System::Processes() {
     std::sort(processes_.begin(), processes_.end());
     return processes_; }
 
-std::string System::Kernel() { 
+string System::Kernel() { 
     return LinuxParser::Kernel(); 
 }
 
@@ -40,7 +40,7 @@ float System::MemoryUtilization() {
     return LinuxParser::MemoryUtilization(); 
 }
 
-std::string System::OperatingSystem() { 
+string System::OperatingSystem() { 
     return LinuxParser::OperatingSystem(); 
 }
 

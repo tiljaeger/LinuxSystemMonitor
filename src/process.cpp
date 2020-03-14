@@ -29,7 +29,12 @@ float Process::CpuUtilization() {
 }
 
 string Process::Command() { 
-    return command_; 
+    string modCommand = command_;
+    if (modCommand.size() > 40) {
+        modCommand = modCommand.substr(0,40);
+        modCommand.append("...");
+    }
+    return modCommand; 
 }
 
 string Process::Ram() { 
